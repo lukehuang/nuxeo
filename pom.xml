@@ -6825,7 +6825,7 @@
       </properties>
     </profile>
     <profile>
-      <id>oracle</id>
+      <id>oracle18c</id>
       <dependencies>
         <dependency>
           <groupId>com.oracle.jdbc</groupId>
