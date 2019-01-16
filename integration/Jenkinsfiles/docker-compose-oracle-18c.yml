@@ -17,22 +17,32 @@
 #     pierre
 #
 
-version: "2"
+version: "2.1"
 services:
   db:
-    image: dockerpriv.nuxeo.com:443/oracle/database:18.3.0-ee
+    # image was built with help of https://github.com/oracle/docker-images/blob/master/OracleDatabase/SingleInstance
+    # oracle is taking time to start, fetch a pre-initialized image with below environment parameters
+    image: dockerpriv.nuxeo.com:443/oracle/database:18.3.0-ee-pre-initialized
     ports:
       - 1521:1521
     environment:
       - ORACLE_SID=TESTDBNAME
       - ORACLE_PDB=oraclepdb
       - ORACLE_PWD=Adm!n-p4ssw0rd
+    healthcheck:
+      test: "sqlplus -L SYSTEM/'Adm!n-p4ssw0rd'@oraclepdb < /dev/null"
+      interval: 1m
+      timeout: 10s
+      retries: 60
 
   tests:
     image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave
     volumes:
       - $WORKSPACE:$WORKSPACE
       - /var/run/docker.sock:/var/run/docker.sock:rw
+    depends_on:
+      db:
+        condition: service_healthy
     links:
       - db
     environment:
