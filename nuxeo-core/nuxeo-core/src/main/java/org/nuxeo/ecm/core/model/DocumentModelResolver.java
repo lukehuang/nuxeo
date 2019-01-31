@@ -168,13 +168,16 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
 
     @Override
     public boolean validate(Object value, Object context) {
-        MutableBoolean validated = new MutableBoolean();
-        resolve(value, context, (session, docRef) -> {
-            if (session.exists(docRef)) {
-                validated.setTrue();
-            }
-        });
-        return validated.isTrue();
+        if (validation) {
+            MutableBoolean validated = new MutableBoolean();
+            resolve(value, context, (session, docRef) -> {
+                if (session.exists(docRef)) {
+                    validated.setTrue();
+                }
+            });
+            return validated.isTrue();
+        }
+        return true;
     }
 
     @Override
